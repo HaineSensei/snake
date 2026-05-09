@@ -157,9 +157,11 @@ impl SnakeState {
             Some(x) => x,
             None => self.current_dir
         };
-        let x = self.snake.step(dir,&mut self.fruit_locations ,self.grid_start ,self.grid_end)?;
-        
-        todo!()
+        let eaten = self.snake.step(dir,&mut self.fruit_locations ,self.grid_start ,self.grid_end)?;
+        if eaten {
+            self.add_fruit();
+        };
+        Ok(())
     }
 }
 
