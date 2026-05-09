@@ -139,7 +139,17 @@ impl SnakeState {
     /// Adds fruit if it can, returns false if it fails as there is no space, in that case, updates self.complete to true.
     fn add_fruit(&mut self) -> bool {
         let frees = self.free_locations();
-        todo!()
+        let x = frees.get_rand();
+        match x {
+            None => {
+                self.complete = true;
+                false
+            },
+            Some(loc) => { 
+                self.fruit_locations.insert(*loc);
+                true 
+            }
+        }
     }
 
     fn update(&mut self, dir: Option<Direction>) -> Result<(),CrashError> {
