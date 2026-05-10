@@ -136,6 +136,7 @@ impl SnakeState {
         locations
     }
 
+    // WARNING: The following is not compatible with games with multiple fruit at a time! Update if necessary.
     /// Adds fruit if it can, returns false if it fails as there is no space, in that case, updates self.complete to true.
     fn add_fruit(&mut self) -> bool {
         let frees = self.free_locations();
@@ -165,19 +166,36 @@ impl SnakeState {
     }
 }
 
-struct InputController {
-    recent_input: Arc<Mutex<Option<(Direction, Instant)>>>
+trait InputController {
+    type Listener: Send;
+
+    fn listener(&self) -> Self::Listener;
+
+    fn input(&self, dur: Duration) -> Option<Direction>;
 }
 
-impl InputController {
-    /// creates new InputController with new thread for input listening.
-    fn new() -> Self {
-        todo!()
-    }
+trait OutputHandler {
+    
+    fn display_frame(&mut self, game_state: &SnakeState);
+}
 
-    /// receives most recent input in the last `duration`.
-    fn input(&mut self, duration: Duration) -> Option<Direction> {
-        todo!()
+trait IoFramework {
+    type InputController: InputController;
+    type OutputHandler: OutputHandler;
+
+    fn initialise() -> (Self::InputController, Self::OutputHandler);
+
+
+    // TODO: Improve game-loop as necessary. Will do for testing purposes.
+    fn run_game() {
+        let mut game = SnakeState::new();
+        let (input_controller, mut output_handler) = Self::initialise();
+        while !game.complete {
+            sleep(PAUSE_TIME);
+            let input = input_controller.input(PAUSE_TIME);
+            game.update(input);
+            output_handler.display_frame(&game);
+        }
     }
 }
 
